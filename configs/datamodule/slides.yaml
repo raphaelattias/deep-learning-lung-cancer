@@ -1,0 +1,7 @@
+_target_: src.datamodules.slides_datamodule.SlidesDataModule
+slides_file: "data/slides.json"
+patch_per_slide: 25
+batch_size: 16
+train_val_test_split: [0.8, 0.1, 0.1]
+num_workers: 0
+pin_memory: False
