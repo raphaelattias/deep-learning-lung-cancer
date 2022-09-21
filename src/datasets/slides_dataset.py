@@ -1,6 +1,7 @@
 import torch
 from torch.utils.data import Dataset
 from torch.nn.functional import interpolate
+from torchvision.transforms import transforms
 import os
 import json
 import pyvips
@@ -8,13 +9,14 @@ import numpy as np
 
 
 class SlidesDataset(Dataset):
-    def __init__(self, slides_file = 'data/slides.json', patch_per_slide=1, crop_size = 300, patch_size = 224, transform=None, target_transform=None):
+    def __init__(self, slides_file = 'data/slides.json', patch_per_slide=1, crop_size = 300, patch_size = 224, transform=None, target_transform=None, dino=False):
         self.slides_file = self.read_list_slides(slides_file)
         self.patch_per_slide = patch_per_slide
         self.crop_size = crop_size
         self.patch_size = patch_size
         self.transform = transform
         self.target_transform = target_transform
+        self.dino = dino
 
     def __len__(self):
         return len(self.slides_file)*self.patch_per_slide
@@ -27,6 +29,11 @@ class SlidesDataset(Dataset):
             patch = self.transform(patch)
         if self.target_transform:
             label = self.target_transform(label)
+        if self.dino:
+            small =  transforms.RandomResizedCrop((self.crop_size, self.crop_size))(patch)
+            big = transforms.RandomResizedCrop((self.crop_size, self.crop_size), scale=(0.5, 1.0))(patch)
+            patch = (small, big)
+
         return patch, label
 
     def read_list_slides(self,slides_file):

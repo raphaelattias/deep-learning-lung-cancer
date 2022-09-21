@@ -47,6 +47,7 @@ class SlidesDataModule(LightningDataModule):
         batch_size: int = 64,
         num_workers: int = 0,
         pin_memory: bool = False,
+        dino: bool = False,
     ):
         super().__init__()
 
@@ -83,7 +84,7 @@ class SlidesDataModule(LightningDataModule):
         """
         # load and split datasets only if not loaded already
         if not self.data_train and not self.data_val and not self.data_test:
-            dataset = SlidesDataset(slides_file=self.hparams.slides_file, crop_size= self.hparams.crop_size, patch_size = self.hparams.patch_size, transform= self.transforms)
+            dataset = SlidesDataset(slides_file=self.hparams.slides_file, crop_size= self.hparams.crop_size, patch_size = self.hparams.patch_size, transform= self.transforms, dino = self.hparams.dino)
             total_samples = len(dataset)
             train_samples = int(self.hparams.train_val_test_split[0]*total_samples)
             val_samples = int(self.hparams.train_val_test_split[1]*total_samples)
